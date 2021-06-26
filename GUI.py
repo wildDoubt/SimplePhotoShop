@@ -22,12 +22,15 @@ class GUI(Frame):
 
         menubar = Menu(master)
         filemenu = Menu(menubar, tearoff=0)
+        helpmenu = Menu(menubar, tearoff=0)
+        helpmenu.add_command(label="Info", command=self.showInformation)
         filemenu.add_command(label="Open", command=self.onOpen)
         filemenu.add_command(label="Save", command=self.onSave)
         filemenu.add_command(label="Exit", command=master.quit)
         menubar.add_cascade(label="File", menu=filemenu)
-
+        menubar.add_cascade(label="Help", menu=helpmenu)
         master.config(menu=menubar)
+
         self.choose = Label(self, text="이미지 파일을 선택해주세요")
 
         self.image = PhotoImage(file='')
@@ -166,6 +169,10 @@ class GUI(Frame):
             convertTkImage(self.curr_image),
             "Canny Operation"
         )
+
+    def showInformation(self):
+        messagebox.showinfo("Simple Photoshop", "Opencv 라이브러리를 활용한 이미지 프로세싱 프로그램입니다.")
+        pass
 
     def onSave(self):
         if self.curr_image is None:
