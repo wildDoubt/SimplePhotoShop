@@ -48,6 +48,7 @@ class GUI(Frame):
         self.button_list.append((Button(command=self.gammaTransformation, text="GAMMA"), "GAMMA"))
         self.button_list.append((Button(command=self.gaussianBlur, text="GAUSSIAN"), "GAUSSIAN"))
         self.button_list.append((Button(command=self.medianBlur, text="MEDIAN"), "MEDIAN"))
+        self.button_list.append((Button(command=self.averageBlur, text="AVERAGE"), "AVERAGE"))
         self.button_list.append((Button(command=self.highBoost, text="HIGHBOOST"), "HB"))
         self.button_list.append((Button(command=self.canny, text="CANNY"), "CANNY"))
 
@@ -124,6 +125,17 @@ class GUI(Frame):
         self.updateImage(
             convertTkImage(self.curr_image),
             "Median Filtering (mask size=" + str(size) + " X " + str(size) + ")"
+        )
+
+    def averageBlur(self):
+        size = simpledialog.askinteger("Mask size", "마스크 사이즈를 입력해주세요.", parent=self)
+        if size is None:
+            return
+
+        self.curr_image = cv2.blur(self.curr_image, (size, size))
+        self.updateImage(
+            convertTkImage(self.curr_image),
+            "Average Filtering (mask size=" + str(size) + " X " + str(size) + ")"
         )
 
     def highBoost(self):
