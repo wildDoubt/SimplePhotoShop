@@ -59,14 +59,13 @@ class GUI(Frame):
         self.label.configure(image=self.original_image_tk)
         self.label.image = self.original_image_tk
         self.choose["text"] = "Original"
-        # 기능 수행할 버튼 보여주기
+
         self.showAllButton()
 
     def updateImage(self, image, description):
         self.label.configure(image=image)
         self.label.image = image
         self.choose["text"] = description
-        # self.label.pack()
 
     def histogramEqualization(self):
         dest = cv2.equalizeHist(self.original_image)
