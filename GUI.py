@@ -38,27 +38,35 @@ class GUI(Frame):
         self.label.pack()
         self.choose.pack()
 
+        self.button_frame = Frame(master)
+        self.button_frame.pack(side=BOTTOM, pady=(0, 20))
         self.button_list = []
         self.initButton()
 
     def initButton(self):
-        self.button_list.append((Button(command=self.resetImage, text="RESET"), "original"))
-        self.button_list.append((Button(command=self.histogramEqualization, text="HE"), "HE"))
-        self.button_list.append((Button(command=self.negativeTransformation, text="NT"), "NT"))
-        self.button_list.append((Button(command=self.gammaTransformation, text="GAMMA"), "GAMMA"))
-        self.button_list.append((Button(command=self.gaussianBlur, text="GAUSSIAN"), "GAUSSIAN"))
-        self.button_list.append((Button(command=self.medianBlur, text="MEDIAN"), "MEDIAN"))
-        self.button_list.append((Button(command=self.averageBlur, text="AVERAGE"), "AVERAGE"))
-        self.button_list.append((Button(command=self.highBoost, text="HIGHBOOST"), "HB"))
-        self.button_list.append((Button(command=self.canny, text="CANNY"), "CANNY"))
+        self.button_list.append(
+            (Button(self.button_frame, command=self.resetImage, text="RESET", width=15), "original"))
+        self.button_list.append(
+            (Button(self.button_frame, command=self.histogramEqualization, text="HE", width=15), "HE"))
+        self.button_list.append(
+            (Button(self.button_frame, command=self.negativeTransformation, text="NT", width=15), "NT"))
+        self.button_list.append(
+            (Button(self.button_frame, command=self.gammaTransformation, text="GAMMA", width=15), "GAMMA"))
+        self.button_list.append(
+            (Button(self.button_frame, command=self.gaussianBlur, text="GAUSSIAN", width=15), "GAUSSIAN"))
+        self.button_list.append((Button(self.button_frame, command=self.medianBlur, text="MEDIAN", width=15), "MEDIAN"))
+        self.button_list.append(
+            (Button(self.button_frame, command=self.averageBlur, text="AVERAGE", width=15), "AVERAGE"))
+        self.button_list.append((Button(self.button_frame, command=self.highBoost, text="HIGHBOOST", width=15), "HB"))
+        self.button_list.append((Button(self.button_frame, command=self.canny, text="CANNY", width=15), "CANNY"))
 
     def resetImage(self):
         self.updateImage(convertTkImage(self.original_image), "Original")
         self.curr_image = self.original_image
 
     def showAllButton(self):
-        for button in self.button_list:
-            button[0].pack(side='left')
+        for i in range(len(self.button_list)):
+            self.button_list[i][0].grid(row=i // 3, column=i % 3)
 
     def hideAllButton(self):
         for button in self.button_list:
