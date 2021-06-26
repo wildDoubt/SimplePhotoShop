@@ -32,9 +32,12 @@ class GUI(Frame):
 
         self.image = PhotoImage(file='')
         self.label = Label(image=self.image)
+        self.curr_image = None
+        self.original_image = None
 
         self.label.pack()
         self.choose.pack()
+
         self.button_list = []
         self.initButton()
 
@@ -43,13 +46,17 @@ class GUI(Frame):
         self.button_list.append((Button(command=self.histogramEqualization, text="HE"), "HE"))
         self.button_list.append((Button(command=self.negativeTransformation, text="NT"), "NT"))
         self.button_list.append((Button(command=self.gammaTransformation, text="GAMMA"), "GAMMA"))
+        self.button_list.append((Button(command=self.gaussianBlur, text="GAUSSIAN"), "GAUSSIAN"))
+        self.button_list.append((Button(command=self.highBoost, text="HIGHBOOST"), "HB"))
+        self.button_list.append((Button(command=self.canny, text="CANNY"), "CANNY"))
 
     def resetImage(self):
         self.updateImage(convertTkImage(self.original_image), "Original")
+        self.curr_image = self.original_image
 
     def showAllButton(self):
         for button in self.button_list:
-            button[0].pack()
+            button[0].pack(side='left')
 
     def hideAllButton(self):
         for button in self.button_list:
@@ -57,10 +64,11 @@ class GUI(Frame):
 
     def onOpen(self):
         ifile = filedialog.askopenfile(parent=self, mode='rb', title='Choose a file')
-        src = autoResize(cv2.imread(ifile.name, 0))
+        src = autoResize(cv2.imread(ifile.name, 1))
 
         self.original_image = src
         self.original_image_tk = convertTkImage(self.original_image)
+        self.curr_image = self.original_image
         self.label.configure(image=self.original_image_tk)
         self.label.image = self.original_image_tk
         self.choose["text"] = "Original"
@@ -73,20 +81,59 @@ class GUI(Frame):
         self.choose["text"] = description
 
     def histogramEqualization(self):
-        dest = cv2.equalizeHist(self.original_image)
-        self.updateImage(convertTkImage(dest), "Histogram Equalization")
+        self.curr_image = cv2.equalizeHist(cv2.cvtColor(self.curr_image, cv2.COLOR_BGR2GRAY))
+        self.updateImage(convertTkImage(self.curr_image), "Histogram Equalization")
+
+        # 컬러 안 바꿔주면 에러 발생
+        self.curr_image = cv2.cvtColor(self.curr_image, cv2.COLOR_GRAY2BGR)
 
     def negativeTransformation(self):
-        dest = 255 - self.original_image
-        self.updateImage(convertTkImage(dest), "Negative Transformation")
+        self.curr_image = 255 - self.curr_image
+        self.updateImage(convertTkImage(self.curr_image), "Negative Transformation")
 
     def gammaTransformation(self):
-        gamma = simpledialog.askfloat("Gamma", "Gamma: ", parent=self)
-        if gamma is not None and 0.4 <= gamma <= 2.2:
-            dest = np.array(255 * (self.original_image / 255) ** gamma, dtype='uint8')
-            self.updateImage(convertTkImage(dest), "Gamma Transformation (γ=" + str(gamma) + ")")
+        gamma = simpledialog.askfloat("Gamma", "γ 값을 입력해주세요.", parent=self)
+
+        if gamma is None:
+            return
+
+        if 0.4 <= gamma <= 2.2:
+            self.curr_image = np.array(255 * (self.curr_image / 255) ** gamma, dtype='uint8')
+            self.updateImage(convertTkImage(self.curr_image), "Gamma Transformation (γ=" + str(gamma) + ")")
         else:
-            messagebox.showerror("Error", "0.4 ~ 2.2 범위만 입력해주세요.")
+            messagebox.showinfo("Error", "0.4 ~ 2.2 범위만 입력해주세요.")
+
+    def gaussianBlur(self):
+        size = simpledialog.askinteger("Mask size", "마스크 사이즈를 입력해주세요.", parent=self)
+        if size is None:
+            return
+
+        self.curr_image = cv2.GaussianBlur(self.curr_image, (size, size), 0)
+        self.updateImage(
+            convertTkImage(self.curr_image),
+            "Gaussian Filtering (mask size=" + str(size) + " X " + str(size) + ")"
+        )
+
+    def highBoost(self):
+        A = simpledialog.askfloat("A value", "A값을 입력해주세요.", parent=self)
+        if A is None:
+            return
+        option = simpledialog.askinteger("Option", "옵션을 선택하세요.", parent=self)
+        if option is None:
+            return
+
+        mask = getSharpeningMask(A, option)
+        self.curr_image = cv2.filter2D(self.curr_image, -1, mask)
+        self.updateImage(
+            convertTkImage(self.curr_image),
+            "High Boost Filter (A=" + str(A) + ", option=" + str(option) + ")")
+
+    def canny(self):
+        self.curr_image = cv2.Canny(self.curr_image, 50, 150)
+        self.updateImage(
+            convertTkImage(self.curr_image),
+            "Canny Operation"
+        )
 
     def onSave(self):
         pass
