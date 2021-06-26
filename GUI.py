@@ -10,8 +10,6 @@ from PIL import ImageTk, Image
 
 filetype = (("Image Files", "*.BMP;*.JPG;*.PNG;"), ("All files", "*.*"))
 
-WIDTH, HEIGHT = 400, 300
-
 
 class GUI(Frame):
     def __init__(self, master=None):
@@ -59,9 +57,9 @@ class GUI(Frame):
 
     def onOpen(self):
         ifile = filedialog.askopenfile(parent=self, mode='rb', title='Choose a file')
-        src = cv2.imread(ifile.name, 0)
-        print(src.shape)
-        self.original_image = cv2.resize(src, dsize=(0, 0), fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+        src = autoResize(cv2.imread(ifile.name, 0))
+
+        self.original_image = src
         self.original_image_tk = convertTkImage(self.original_image)
         self.label.configure(image=self.original_image_tk)
         self.label.image = self.original_image_tk
