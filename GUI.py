@@ -1,12 +1,17 @@
 import os
 import numpy as np
 from tkinter import *
+from tkinter import simpledialog
+from tkinter import messagebox
 from Util import *
 from tkinter import filedialog
 import cv2
 from PIL import ImageTk, Image
 
 filetype = (("Image Files", "*.BMP;*.JPG;*.PNG;"), ("All files", "*.*"))
+
+WIDTH, HEIGHT = 400, 300
+
 
 class GUI(Frame):
     def __init__(self, master=None):
@@ -39,6 +44,7 @@ class GUI(Frame):
         self.button_list.append((Button(command=self.resetImage, text="RESET"), "original"))
         self.button_list.append((Button(command=self.histogramEqualization, text="HE"), "HE"))
         self.button_list.append((Button(command=self.negativeTransformation, text="NT"), "NT"))
+        self.button_list.append((Button(command=self.gammaTransformation, text="GAMMA"), "GAMMA"))
 
     def resetImage(self):
         self.updateImage(convertTkImage(self.original_image), "Original")
@@ -53,8 +59,9 @@ class GUI(Frame):
 
     def onOpen(self):
         ifile = filedialog.askopenfile(parent=self, mode='rb', title='Choose a file')
-
-        self.original_image = cv2.imread(ifile.name, 0)
+        src = cv2.imread(ifile.name, 0)
+        print(src.shape)
+        self.original_image = cv2.resize(src, dsize=(0, 0), fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
         self.original_image_tk = convertTkImage(self.original_image)
         self.label.configure(image=self.original_image_tk)
         self.label.image = self.original_image_tk
@@ -74,6 +81,14 @@ class GUI(Frame):
     def negativeTransformation(self):
         dest = 255 - self.original_image
         self.updateImage(convertTkImage(dest), "Negative Transformation")
+
+    def gammaTransformation(self):
+        gamma = simpledialog.askfloat("Gamma", "Gamma: ", parent=self)
+        if gamma is not None and 0.4 <= gamma <= 2.2:
+            dest = np.array(255 * (self.original_image / 255) ** gamma, dtype='uint8')
+            self.updateImage(convertTkImage(dest), "Gamma Transformation (γ=" + str(gamma) + ")")
+        else:
+            messagebox.showerror("Error", "0.4 ~ 2.2 범위만 입력해주세요.")
 
     def onSave(self):
         pass
