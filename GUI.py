@@ -178,6 +178,7 @@ class GUI(Frame):
         if self.curr_image is None:
             messagebox.showinfo("이미지 없음", "이미지를 먼저 선택해주세요.")
             return
+
         file = filedialog.asksaveasfile(parent=self,
                                         mode='w',
                                         title="Choose a directory",
@@ -186,5 +187,5 @@ class GUI(Frame):
         if file is None:
             return
         cv2.imwrite(file.name, self.curr_image)
-        messagebox.showinfo("저장 완료", "성공적으로 저장되었습니다.")
+        messagebox.showinfo("저장 완료", f"{file.name}으로 성공적으로 저장되었습니다.")
         file.close()
