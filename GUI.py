@@ -1,15 +1,10 @@
-import os
-import numpy as np
-from tkinter import *
-from tkinter import simpledialog
-from tkinter import messagebox
-from Util import *
 from tkinter import filedialog
-import cv2
-from PIL import ImageTk, Image
+from tkinter import messagebox
+from tkinter import simpledialog
+
+from Util import *
 
 filetype = (("Image Files", "*.BMP;*.JPG;*.PNG;"), ("All files", "*.*"))
-
 
 class GUI(Frame):
     def __init__(self, master=None):
