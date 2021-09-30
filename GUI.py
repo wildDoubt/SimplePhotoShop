@@ -72,7 +72,9 @@ class GUI(Frame):
 
     def onOpen(self):
         ifile = filedialog.askopenfile(parent=self, mode='rb', title='Choose a file', filetype=filetype)
-        src = autoResize(cv2.imread(ifile.name, 1))
+        ifile_array = np.fromfile(ifile.name, np.uint8)
+
+        src = autoResize(cv2.imdecode(ifile_array, cv2.IMREAD_COLOR))
 
         self.original_image = src
         self.original_image_tk = convertTkImage(self.original_image)
