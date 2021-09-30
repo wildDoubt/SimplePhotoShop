@@ -33,4 +33,8 @@ tkinter를 이용하여 만든 간단한 이미지 프로세싱 프로그램입�
 
 8. Canny Operation
 
+## Example
+![ex1](example/lena_gamma_0.4.JPG)
+![ex2](example/lena_gaussian-filter_11.JPG)
+
 [ref]: https://github.com/wildDoubt/Area_Processing#2-sharpening
